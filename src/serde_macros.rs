@@ -117,36 +117,3 @@ pub mod serde_details {
         }
     }
 }
-
-#[macro_export]
-#[cfg(feature = "serde")]
-/// Implements `Serialize` and `Deserialize` for a type `$t` which
-/// represents a newtype over a byte-slice over length `$len`
-macro_rules! serde_impl(
-    ($t:ident, $len:expr) => (
-        impl $crate::serde_macros::serde_details::SerdeHash for $t {
-            const N : usize = $len;
-            fn from_slice_delegated(sl: &[u8]) -> Result<Self, $crate::Error> {
-                $t::from_slice(sl)
-            }
-        }
-
-        impl $crate::serde::Serialize for $t {
-            fn serialize<S: $crate::serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-                $crate::serde_macros::serde_details::SerdeHash::serialize(self, s)
-            }
-        }
-
-        impl<'de> $crate::serde::Deserialize<'de> for $t {
-            fn deserialize<D: $crate::serde::Deserializer<'de>>(d: D) -> Result<$t, D::Error> {
-                $crate::serde_macros::serde_details::SerdeHash::deserialize(d)
-            }
-        }
-));
-
-/// Does an "empty" serde implementation for the configuration without serde feature
-#[macro_export]
-#[cfg(not(feature = "serde"))]
-macro_rules! serde_impl(
-        ($t:ident, $len:expr) => ()
-);

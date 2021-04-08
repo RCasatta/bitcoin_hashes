@@ -209,6 +209,41 @@ define_slice_to_le!(slice_to_u64_le, u64);
 define_le_to_array!(u32_to_array_le, u32, 4);
 define_le_to_array!(u64_to_array_le, u64, 8);
 
+
+#[macro_export]
+#[cfg(feature = "serde")]
+/// Implements `Serialize` and `Deserialize` for a type `$t` which
+/// represents a newtype over a byte-slice over length `$len`
+macro_rules! serde_impl(
+    ($t:ident, $len:expr) => (
+        impl $crate::serde_macros::serde_details::SerdeHash for $t {
+            const N : usize = $len;
+            fn from_slice_delegated(sl: &[u8]) -> Result<Self, $crate::Error> {
+                $t::from_slice(sl)
+            }
+        }
+
+        impl $crate::serde::Serialize for $t {
+            fn serialize<S: $crate::serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+                $crate::serde_macros::serde_details::SerdeHash::serialize(self, s)
+            }
+        }
+
+        impl<'de> $crate::serde::Deserialize<'de> for $t {
+            fn deserialize<D: $crate::serde::Deserializer<'de>>(d: D) -> Result<$t, D::Error> {
+                $crate::serde_macros::serde_details::SerdeHash::deserialize(d)
+            }
+        }
+));
+
+/// Does an "empty" serde implementation for the configuration without serde feature
+#[macro_export]
+#[cfg(not(feature = "serde"))]
+macro_rules! serde_impl(
+        ($t:ident, $len:expr) => ()
+);
+
+
 /// Create a new newtype around a [Hash] type.
 /// Requires Hash trait in scope
 #[macro_export]
@@ -226,7 +261,7 @@ macro_rules! hash_newtype {
         hex_fmt_impl!(Display, $newtype);
         hex_fmt_impl!(LowerHex, $newtype);
         index_impl!($newtype);
-        $crate::serde_impl!($newtype, $len);
+        serde_impl!($newtype, $len);
         borrow_slice_impl!($newtype);
 
         impl $newtype {
