@@ -21,10 +21,10 @@
 
 use core::{cmp, hash, str};
 
-use HashEngine as EngineTrait;
-use Hash as HashTrait;
-use Error;
 use util;
+use Error;
+use Hash as HashTrait;
+use HashEngine as EngineTrait;
 
 const BLOCK_SIZE: usize = 128;
 
@@ -40,8 +40,14 @@ impl Default for HashEngine {
     fn default() -> Self {
         HashEngine {
             h: [
-                0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1,
-                0x510e527fade682d1, 0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179,
+                0x6a09e667f3bcc908,
+                0xbb67ae8584caa73b,
+                0x3c6ef372fe94f82b,
+                0xa54ff53a5f1d36f1,
+                0x510e527fade682d1,
+                0x9b05688c2b3e6c1f,
+                0x1f83d9abfb41bd6b,
+                0x5be0cd19137e2179,
             ],
             length: 0,
             buffer: [0; BLOCK_SIZE],
@@ -252,73 +258,969 @@ impl HashEngine {
         round!(c, d, e, f, g, h, a, b, 0x9bdc06a725c71235, w[14]);
         round!(b, c, d, e, f, g, h, a, 0xc19bf174cf692694, w[15]);
 
-        round!(a, b, c, d, e, f, g, h, 0xe49b69c19ef14ad2, w[0], w[14], w[9], w[1]);
-        round!(h, a, b, c, d, e, f, g, 0xefbe4786384f25e3, w[1], w[15], w[10], w[2]);
-        round!(g, h, a, b, c, d, e, f, 0x0fc19dc68b8cd5b5, w[2], w[0], w[11], w[3]);
-        round!(f, g, h, a, b, c, d, e, 0x240ca1cc77ac9c65, w[3], w[1], w[12], w[4]);
-        round!(e, f, g, h, a, b, c, d, 0x2de92c6f592b0275, w[4], w[2], w[13], w[5]);
-        round!(d, e, f, g, h, a, b, c, 0x4a7484aa6ea6e483, w[5], w[3], w[14], w[6]);
-        round!(c, d, e, f, g, h, a, b, 0x5cb0a9dcbd41fbd4, w[6], w[4], w[15], w[7]);
-        round!(b, c, d, e, f, g, h, a, 0x76f988da831153b5, w[7], w[5], w[0], w[8]);
-        round!(a, b, c, d, e, f, g, h, 0x983e5152ee66dfab, w[8], w[6], w[1], w[9]);
-        round!(h, a, b, c, d, e, f, g, 0xa831c66d2db43210, w[9], w[7], w[2], w[10]);
-        round!(g, h, a, b, c, d, e, f, 0xb00327c898fb213f, w[10], w[8], w[3], w[11]);
-        round!(f, g, h, a, b, c, d, e, 0xbf597fc7beef0ee4, w[11], w[9], w[4], w[12]);
-        round!(e, f, g, h, a, b, c, d, 0xc6e00bf33da88fc2, w[12], w[10], w[5], w[13]);
-        round!(d, e, f, g, h, a, b, c, 0xd5a79147930aa725, w[13], w[11], w[6], w[14]);
-        round!(c, d, e, f, g, h, a, b, 0x06ca6351e003826f, w[14], w[12], w[7], w[15]);
-        round!(b, c, d, e, f, g, h, a, 0x142929670a0e6e70, w[15], w[13], w[8], w[0]);
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0xe49b69c19ef14ad2,
+            w[0],
+            w[14],
+            w[9],
+            w[1]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0xefbe4786384f25e3,
+            w[1],
+            w[15],
+            w[10],
+            w[2]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0x0fc19dc68b8cd5b5,
+            w[2],
+            w[0],
+            w[11],
+            w[3]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0x240ca1cc77ac9c65,
+            w[3],
+            w[1],
+            w[12],
+            w[4]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0x2de92c6f592b0275,
+            w[4],
+            w[2],
+            w[13],
+            w[5]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0x4a7484aa6ea6e483,
+            w[5],
+            w[3],
+            w[14],
+            w[6]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0x5cb0a9dcbd41fbd4,
+            w[6],
+            w[4],
+            w[15],
+            w[7]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x76f988da831153b5,
+            w[7],
+            w[5],
+            w[0],
+            w[8]
+        );
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0x983e5152ee66dfab,
+            w[8],
+            w[6],
+            w[1],
+            w[9]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0xa831c66d2db43210,
+            w[9],
+            w[7],
+            w[2],
+            w[10]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0xb00327c898fb213f,
+            w[10],
+            w[8],
+            w[3],
+            w[11]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0xbf597fc7beef0ee4,
+            w[11],
+            w[9],
+            w[4],
+            w[12]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0xc6e00bf33da88fc2,
+            w[12],
+            w[10],
+            w[5],
+            w[13]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0xd5a79147930aa725,
+            w[13],
+            w[11],
+            w[6],
+            w[14]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0x06ca6351e003826f,
+            w[14],
+            w[12],
+            w[7],
+            w[15]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x142929670a0e6e70,
+            w[15],
+            w[13],
+            w[8],
+            w[0]
+        );
 
-        round!(a, b, c, d, e, f, g, h, 0x27b70a8546d22ffc, w[0], w[14], w[9], w[1]);
-        round!(h, a, b, c, d, e, f, g, 0x2e1b21385c26c926, w[1], w[15], w[10], w[2]);
-        round!(g, h, a, b, c, d, e, f, 0x4d2c6dfc5ac42aed, w[2], w[0], w[11], w[3]);
-        round!(f, g, h, a, b, c, d, e, 0x53380d139d95b3df, w[3], w[1], w[12], w[4]);
-        round!(e, f, g, h, a, b, c, d, 0x650a73548baf63de, w[4], w[2], w[13], w[5]);
-        round!(d, e, f, g, h, a, b, c, 0x766a0abb3c77b2a8, w[5], w[3], w[14], w[6]);
-        round!(c, d, e, f, g, h, a, b, 0x81c2c92e47edaee6, w[6], w[4], w[15], w[7]);
-        round!(b, c, d, e, f, g, h, a, 0x92722c851482353b, w[7], w[5], w[0], w[8]);
-        round!(a, b, c, d, e, f, g, h, 0xa2bfe8a14cf10364, w[8], w[6], w[1], w[9]);
-        round!(h, a, b, c, d, e, f, g, 0xa81a664bbc423001, w[9], w[7], w[2], w[10]);
-        round!(g, h, a, b, c, d, e, f, 0xc24b8b70d0f89791, w[10], w[8], w[3], w[11]);
-        round!(f, g, h, a, b, c, d, e, 0xc76c51a30654be30, w[11], w[9], w[4], w[12]);
-        round!(e, f, g, h, a, b, c, d, 0xd192e819d6ef5218, w[12], w[10], w[5], w[13]);
-        round!(d, e, f, g, h, a, b, c, 0xd69906245565a910, w[13], w[11], w[6], w[14]);
-        round!(c, d, e, f, g, h, a, b, 0xf40e35855771202a, w[14], w[12], w[7], w[15]);
-        round!(b, c, d, e, f, g, h, a, 0x106aa07032bbd1b8, w[15], w[13], w[8], w[0]);
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0x27b70a8546d22ffc,
+            w[0],
+            w[14],
+            w[9],
+            w[1]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0x2e1b21385c26c926,
+            w[1],
+            w[15],
+            w[10],
+            w[2]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0x4d2c6dfc5ac42aed,
+            w[2],
+            w[0],
+            w[11],
+            w[3]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0x53380d139d95b3df,
+            w[3],
+            w[1],
+            w[12],
+            w[4]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0x650a73548baf63de,
+            w[4],
+            w[2],
+            w[13],
+            w[5]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0x766a0abb3c77b2a8,
+            w[5],
+            w[3],
+            w[14],
+            w[6]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0x81c2c92e47edaee6,
+            w[6],
+            w[4],
+            w[15],
+            w[7]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x92722c851482353b,
+            w[7],
+            w[5],
+            w[0],
+            w[8]
+        );
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0xa2bfe8a14cf10364,
+            w[8],
+            w[6],
+            w[1],
+            w[9]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0xa81a664bbc423001,
+            w[9],
+            w[7],
+            w[2],
+            w[10]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0xc24b8b70d0f89791,
+            w[10],
+            w[8],
+            w[3],
+            w[11]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0xc76c51a30654be30,
+            w[11],
+            w[9],
+            w[4],
+            w[12]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0xd192e819d6ef5218,
+            w[12],
+            w[10],
+            w[5],
+            w[13]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0xd69906245565a910,
+            w[13],
+            w[11],
+            w[6],
+            w[14]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0xf40e35855771202a,
+            w[14],
+            w[12],
+            w[7],
+            w[15]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x106aa07032bbd1b8,
+            w[15],
+            w[13],
+            w[8],
+            w[0]
+        );
 
-        round!(a, b, c, d, e, f, g, h, 0x19a4c116b8d2d0c8, w[0], w[14], w[9], w[1]);
-        round!(h, a, b, c, d, e, f, g, 0x1e376c085141ab53, w[1], w[15], w[10], w[2]);
-        round!(g, h, a, b, c, d, e, f, 0x2748774cdf8eeb99, w[2], w[0], w[11], w[3]);
-        round!(f, g, h, a, b, c, d, e, 0x34b0bcb5e19b48a8, w[3], w[1], w[12], w[4]);
-        round!(e, f, g, h, a, b, c, d, 0x391c0cb3c5c95a63, w[4], w[2], w[13], w[5]);
-        round!(d, e, f, g, h, a, b, c, 0x4ed8aa4ae3418acb, w[5], w[3], w[14], w[6]);
-        round!(c, d, e, f, g, h, a, b, 0x5b9cca4f7763e373, w[6], w[4], w[15], w[7]);
-        round!(b, c, d, e, f, g, h, a, 0x682e6ff3d6b2b8a3, w[7], w[5], w[0], w[8]);
-        round!(a, b, c, d, e, f, g, h, 0x748f82ee5defb2fc, w[8], w[6], w[1], w[9]);
-        round!(h, a, b, c, d, e, f, g, 0x78a5636f43172f60, w[9], w[7], w[2], w[10]);
-        round!(g, h, a, b, c, d, e, f, 0x84c87814a1f0ab72, w[10], w[8], w[3], w[11]);
-        round!(f, g, h, a, b, c, d, e, 0x8cc702081a6439ec, w[11], w[9], w[4], w[12]);
-        round!(e, f, g, h, a, b, c, d, 0x90befffa23631e28, w[12], w[10], w[5], w[13]);
-        round!(d, e, f, g, h, a, b, c, 0xa4506cebde82bde9, w[13], w[11], w[6], w[14]);
-        round!(c, d, e, f, g, h, a, b, 0xbef9a3f7b2c67915, w[14], w[12], w[7], w[15]);
-        round!(b, c, d, e, f, g, h, a, 0xc67178f2e372532b, w[15], w[13], w[8], w[0]);
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0x19a4c116b8d2d0c8,
+            w[0],
+            w[14],
+            w[9],
+            w[1]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0x1e376c085141ab53,
+            w[1],
+            w[15],
+            w[10],
+            w[2]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0x2748774cdf8eeb99,
+            w[2],
+            w[0],
+            w[11],
+            w[3]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0x34b0bcb5e19b48a8,
+            w[3],
+            w[1],
+            w[12],
+            w[4]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0x391c0cb3c5c95a63,
+            w[4],
+            w[2],
+            w[13],
+            w[5]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0x4ed8aa4ae3418acb,
+            w[5],
+            w[3],
+            w[14],
+            w[6]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0x5b9cca4f7763e373,
+            w[6],
+            w[4],
+            w[15],
+            w[7]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x682e6ff3d6b2b8a3,
+            w[7],
+            w[5],
+            w[0],
+            w[8]
+        );
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0x748f82ee5defb2fc,
+            w[8],
+            w[6],
+            w[1],
+            w[9]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0x78a5636f43172f60,
+            w[9],
+            w[7],
+            w[2],
+            w[10]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0x84c87814a1f0ab72,
+            w[10],
+            w[8],
+            w[3],
+            w[11]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0x8cc702081a6439ec,
+            w[11],
+            w[9],
+            w[4],
+            w[12]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0x90befffa23631e28,
+            w[12],
+            w[10],
+            w[5],
+            w[13]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0xa4506cebde82bde9,
+            w[13],
+            w[11],
+            w[6],
+            w[14]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0xbef9a3f7b2c67915,
+            w[14],
+            w[12],
+            w[7],
+            w[15]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0xc67178f2e372532b,
+            w[15],
+            w[13],
+            w[8],
+            w[0]
+        );
 
-        round!(a, b, c, d, e, f, g, h, 0xca273eceea26619c, w[0], w[14], w[9], w[1]);
-        round!(h, a, b, c, d, e, f, g, 0xd186b8c721c0c207, w[1], w[15], w[10], w[2]);
-        round!(g, h, a, b, c, d, e, f, 0xeada7dd6cde0eb1e, w[2], w[0], w[11], w[3]);
-        round!(f, g, h, a, b, c, d, e, 0xf57d4f7fee6ed178, w[3], w[1], w[12], w[4]);
-        round!(e, f, g, h, a, b, c, d, 0x06f067aa72176fba, w[4], w[2], w[13], w[5]);
-        round!(d, e, f, g, h, a, b, c, 0x0a637dc5a2c898a6, w[5], w[3], w[14], w[6]);
-        round!(c, d, e, f, g, h, a, b, 0x113f9804bef90dae, w[6], w[4], w[15], w[7]);
-        round!(b, c, d, e, f, g, h, a, 0x1b710b35131c471b, w[7], w[5], w[0], w[8]);
-        round!(a, b, c, d, e, f, g, h, 0x28db77f523047d84, w[8], w[6], w[1], w[9]);
-        round!(h, a, b, c, d, e, f, g, 0x32caab7b40c72493, w[9], w[7], w[2], w[10]);
-        round!(g, h, a, b, c, d, e, f, 0x3c9ebe0a15c9bebc, w[10], w[8], w[3], w[11]);
-        round!(f, g, h, a, b, c, d, e, 0x431d67c49c100d4c, w[11], w[9], w[4], w[12]);
-        round!(e, f, g, h, a, b, c, d, 0x4cc5d4becb3e42b6, w[12], w[10], w[5], w[13]);
-        round!(d, e, f, g, h, a, b, c, 0x597f299cfc657e2a, w[13], w[11], w[6], w[14]);
-        round!(c, d, e, f, g, h, a, b, 0x5fcb6fab3ad6faec, w[14], w[12], w[7], w[15]);
-        round!(b, c, d, e, f, g, h, a, 0x6c44198c4a475817, w[15], w[13], w[8], w[0]);
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0xca273eceea26619c,
+            w[0],
+            w[14],
+            w[9],
+            w[1]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0xd186b8c721c0c207,
+            w[1],
+            w[15],
+            w[10],
+            w[2]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0xeada7dd6cde0eb1e,
+            w[2],
+            w[0],
+            w[11],
+            w[3]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0xf57d4f7fee6ed178,
+            w[3],
+            w[1],
+            w[12],
+            w[4]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0x06f067aa72176fba,
+            w[4],
+            w[2],
+            w[13],
+            w[5]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0x0a637dc5a2c898a6,
+            w[5],
+            w[3],
+            w[14],
+            w[6]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0x113f9804bef90dae,
+            w[6],
+            w[4],
+            w[15],
+            w[7]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x1b710b35131c471b,
+            w[7],
+            w[5],
+            w[0],
+            w[8]
+        );
+        round!(
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            0x28db77f523047d84,
+            w[8],
+            w[6],
+            w[1],
+            w[9]
+        );
+        round!(
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            0x32caab7b40c72493,
+            w[9],
+            w[7],
+            w[2],
+            w[10]
+        );
+        round!(
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            f,
+            0x3c9ebe0a15c9bebc,
+            w[10],
+            w[8],
+            w[3],
+            w[11]
+        );
+        round!(
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            e,
+            0x431d67c49c100d4c,
+            w[11],
+            w[9],
+            w[4],
+            w[12]
+        );
+        round!(
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            d,
+            0x4cc5d4becb3e42b6,
+            w[12],
+            w[10],
+            w[5],
+            w[13]
+        );
+        round!(
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            c,
+            0x597f299cfc657e2a,
+            w[13],
+            w[11],
+            w[6],
+            w[14]
+        );
+        round!(
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            b,
+            0x5fcb6fab3ad6faec,
+            w[14],
+            w[12],
+            w[7],
+            w[15]
+        );
+        round!(
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+            a,
+            0x6c44198c4a475817,
+            w[15],
+            w[13],
+            w[8],
+            w[0]
+        );
 
         self.h[0] = self.h[0].wrapping_add(a);
         self.h[1] = self.h[1].wrapping_add(b);
@@ -333,8 +1235,8 @@ impl HashEngine {
 
 #[cfg(test)]
 mod tests {
-    use sha512;
     use hex::{FromHex, ToHex};
+    use sha512;
     use Hash;
     use HashEngine;
 
@@ -396,7 +1298,10 @@ mod tests {
         for test in tests {
             // Hash through high-level API, check hex encoding/decoding
             let hash = sha512::Hash::hash(&test.input.as_bytes());
-            assert_eq!(hash, sha512::Hash::from_hex(test.output_str).expect("parse hex"));
+            assert_eq!(
+                hash,
+                sha512::Hash::from_hex(test.output_str).expect("parse hex")
+            );
             assert_eq!(&hash[..], &test.output[..]);
             assert_eq!(&hash.to_hex(), &test.output_str);
 
@@ -411,19 +1316,16 @@ mod tests {
         }
     }
 
-    #[cfg(feature="serde")]
+    #[cfg(feature = "serde")]
     #[test]
     fn sha512_serde() {
-        use serde_test::{Configure, Token, assert_tokens};
+        use serde_test::{assert_tokens, Configure, Token};
 
         static HASH_BYTES: [u8; 64] = [
-            0x8b, 0x41, 0xe1, 0xb7, 0x8a, 0xd1, 0x15, 0x21,
-            0x11, 0x3c, 0x52, 0xff, 0x18, 0x2a, 0x1b, 0x8e,
-            0x0a, 0x19, 0x57, 0x54, 0xaa, 0x52, 0x7f, 0xcd,
-            0x00, 0xa4, 0x11, 0x62, 0x0b, 0x46, 0xf2, 0x0f,
-            0xff, 0xfb, 0x80, 0x88, 0xcc, 0xf8, 0x54, 0x97,
-            0x12, 0x1a, 0xd4, 0x49, 0x9e, 0x08, 0x45, 0xb8,
-            0x76, 0xf6, 0xdd, 0x66, 0x40, 0x08, 0x8a, 0x2f,
+            0x8b, 0x41, 0xe1, 0xb7, 0x8a, 0xd1, 0x15, 0x21, 0x11, 0x3c, 0x52, 0xff, 0x18, 0x2a,
+            0x1b, 0x8e, 0x0a, 0x19, 0x57, 0x54, 0xaa, 0x52, 0x7f, 0xcd, 0x00, 0xa4, 0x11, 0x62,
+            0x0b, 0x46, 0xf2, 0x0f, 0xff, 0xfb, 0x80, 0x88, 0xcc, 0xf8, 0x54, 0x97, 0x12, 0x1a,
+            0xd4, 0x49, 0x9e, 0x08, 0x45, 0xb8, 0x76, 0xf6, 0xdd, 0x66, 0x40, 0x08, 0x8a, 0x2f,
             0x0b, 0x2d, 0x8a, 0x60, 0x0b, 0xdf, 0x4c, 0x0c,
         ];
 
@@ -433,13 +1335,13 @@ mod tests {
             &hash.readable(),
             &[Token::Str(
                 "8b41e1b78ad11521113c52ff182a1b8e0a195754aa527fcd00a411620b46f20f\
-                 fffb8088ccf85497121ad4499e0845b876f6dd6640088a2f0b2d8a600bdf4c0c"
+                 fffb8088ccf85497121ad4499e0845b876f6dd6640088a2f0b2d8a600bdf4c0c",
             )],
         );
     }
 }
 
-#[cfg(all(test, feature="unstable"))]
+#[cfg(all(test, feature = "unstable"))]
 mod benches {
     use test::Bencher;
 
@@ -448,33 +1350,32 @@ mod benches {
     use HashEngine;
 
     #[bench]
-    pub fn sha512_10(bh: & mut Bencher) {
+    pub fn sha512_10(bh: &mut Bencher) {
         let mut engine = sha512::Hash::engine();
         let bytes = [1u8; 10];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    pub fn sha512_1k(bh: & mut Bencher) {
+    pub fn sha512_1k(bh: &mut Bencher) {
         let mut engine = sha512::Hash::engine();
         let bytes = [1u8; 1024];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    pub fn sha512_64k(bh: & mut Bencher) {
+    pub fn sha512_64k(bh: &mut Bencher) {
         let mut engine = sha512::Hash::engine();
         let bytes = [1u8; 65536];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
-
 }

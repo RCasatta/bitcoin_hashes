@@ -17,10 +17,10 @@
 use core::{cmp, str};
 
 use hex;
-use HashEngine as EngineTrait;
-use Hash as HashTrait;
-use Error;
 use util;
+use Error;
+use Hash as HashTrait;
+use HashEngine as EngineTrait;
 
 const BLOCK_SIZE: usize = 64;
 
@@ -35,7 +35,10 @@ pub struct HashEngine {
 impl Default for HashEngine {
     fn default() -> Self {
         HashEngine {
-            h: [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19],
+            h: [
+                0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab,
+                0x5be0cd19,
+            ],
             length: 0,
             buffer: [0; BLOCK_SIZE],
         }
@@ -200,18 +203,20 @@ impl Midstate {
 
 impl hex::FromHex for Midstate {
     fn from_byte_iter<I>(iter: I) -> Result<Self, hex::Error>
-        where I: Iterator<Item=Result<u8, hex::Error>> +
-            ExactSizeIterator +
-            DoubleEndedIterator,
+    where
+        I: Iterator<Item = Result<u8, hex::Error>> + ExactSizeIterator + DoubleEndedIterator,
     {
         // DISPLAY_BACKWARD is true
-        Ok(Midstate::from_inner(hex::FromHex::from_byte_iter(iter.rev())?))
+        Ok(Midstate::from_inner(hex::FromHex::from_byte_iter(
+            iter.rev(),
+        )?))
     }
 }
 
 macro_rules! Ch( ($x:expr, $y:expr, $z:expr) => ($z ^ ($x & ($y ^ $z))) );
 macro_rules! Maj( ($x:expr, $y:expr, $z:expr) => (($x & $y) | ($z & ($x | $y))) );
-macro_rules! Sigma0( ($x:expr) => (circular_lshift32!(30, $x) ^ circular_lshift32!(19, $x) ^ circular_lshift32!(10, $x)) ); macro_rules! Sigma1( ($x:expr) => (circular_lshift32!(26, $x) ^ circular_lshift32!(21, $x) ^ circular_lshift32!(7, $x)) );
+macro_rules! Sigma0( ($x:expr) => (circular_lshift32!(30, $x) ^ circular_lshift32!(19, $x) ^ circular_lshift32!(10, $x)) );
+macro_rules! Sigma1( ($x:expr) => (circular_lshift32!(26, $x) ^ circular_lshift32!(21, $x) ^ circular_lshift32!(7, $x)) );
 macro_rules! sigma0( ($x:expr) => (circular_lshift32!(25, $x) ^ circular_lshift32!(14, $x) ^ ($x >> 3)) );
 macro_rules! sigma1( ($x:expr) => (circular_lshift32!(15, $x) ^ circular_lshift32!(13, $x) ^ ($x >> 10)) );
 
@@ -236,7 +241,10 @@ impl HashEngine {
     /// Be aware that this method panics when [length] is
     /// not a multiple of the block size.
     pub fn from_midstate(midstate: Midstate, length: usize) -> HashEngine {
-        assert!(length % BLOCK_SIZE == 0, "length is no multiple of the block size");
+        assert!(
+            length % BLOCK_SIZE == 0,
+            "length is no multiple of the block size"
+        );
 
         let mut ret = [0; 8];
         for (ret_val, midstate_bytes) in ret.iter_mut().zip(midstate[..].chunks(4)) {
@@ -349,8 +357,8 @@ impl HashEngine {
 
 #[cfg(test)]
 mod tests {
-    use sha256;
     use hex::{FromHex, ToHex};
+    use sha256;
     use {Hash, HashEngine};
 
     #[derive(Clone)]
@@ -367,30 +375,27 @@ mod tests {
             Test {
                 input: "",
                 output: vec![
-                    0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14,
-                    0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24,
-                    0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c,
-                    0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55,
+                    0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a, 0xfb, 0xf4, 0xc8, 0x99,
+                    0x6f, 0xb9, 0x24, 0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c, 0xa4, 0x95,
+                    0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55,
                 ],
-                output_str: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                output_str: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
             },
             Test {
                 input: "The quick brown fox jumps over the lazy dog",
                 output: vec![
-                    0xd7, 0xa8, 0xfb, 0xb3, 0x07, 0xd7, 0x80, 0x94,
-                    0x69, 0xca, 0x9a, 0xbc, 0xb0, 0x08, 0x2e, 0x4f,
-                    0x8d, 0x56, 0x51, 0xe4, 0x6d, 0x3c, 0xdb, 0x76,
-                    0x2d, 0x02, 0xd0, 0xbf, 0x37, 0xc9, 0xe5, 0x92,
+                    0xd7, 0xa8, 0xfb, 0xb3, 0x07, 0xd7, 0x80, 0x94, 0x69, 0xca, 0x9a, 0xbc, 0xb0,
+                    0x08, 0x2e, 0x4f, 0x8d, 0x56, 0x51, 0xe4, 0x6d, 0x3c, 0xdb, 0x76, 0x2d, 0x02,
+                    0xd0, 0xbf, 0x37, 0xc9, 0xe5, 0x92,
                 ],
                 output_str: "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
             },
             Test {
                 input: "The quick brown fox jumps over the lazy dog.",
                 output: vec![
-                    0xef, 0x53, 0x7f, 0x25, 0xc8, 0x95, 0xbf, 0xa7,
-                    0x82, 0x52, 0x65, 0x29, 0xa9, 0xb6, 0x3d, 0x97,
-                    0xaa, 0x63, 0x15, 0x64, 0xd5, 0xd7, 0x89, 0xc2,
-                    0xb7, 0x65, 0x44, 0x8c, 0x86, 0x35, 0xfb, 0x6c,
+                    0xef, 0x53, 0x7f, 0x25, 0xc8, 0x95, 0xbf, 0xa7, 0x82, 0x52, 0x65, 0x29, 0xa9,
+                    0xb6, 0x3d, 0x97, 0xaa, 0x63, 0x15, 0x64, 0xd5, 0xd7, 0x89, 0xc2, 0xb7, 0x65,
+                    0x44, 0x8c, 0x86, 0x35, 0xfb, 0x6c,
                 ],
                 output_str: "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c",
             },
@@ -399,7 +404,10 @@ mod tests {
         for test in tests {
             // Hash through high-level API, check hex encoding/decoding
             let hash = sha256::Hash::hash(&test.input.as_bytes());
-            assert_eq!(hash, sha256::Hash::from_hex(test.output_str).expect("parse hex"));
+            assert_eq!(
+                hash,
+                sha256::Hash::from_hex(test.output_str).expect("parse hex")
+            );
             assert_eq!(&hash[..], &test.output[..]);
             assert_eq!(&hash.to_hex(), &test.output_str);
 
@@ -421,10 +429,9 @@ mod tests {
         // sha256dhash of outpoint
         // 73828cbc65fd68ab78dc86992b76ae50ae2bf8ceedbe8de0483172f0886219f7:0
         engine.input(&[
-            0x9d, 0xd0, 0x1b, 0x56, 0xb1, 0x56, 0x45, 0x14,
-            0x3e, 0xad, 0x15, 0x8d, 0xec, 0x19, 0xf8, 0xce,
-            0xa9, 0x0b, 0xd0, 0xa9, 0xb2, 0xf8, 0x1d, 0x21,
-            0xff, 0xa3, 0xa4, 0xc6, 0x44, 0x81, 0xd4, 0x1c,
+            0x9d, 0xd0, 0x1b, 0x56, 0xb1, 0x56, 0x45, 0x14, 0x3e, 0xad, 0x15, 0x8d, 0xec, 0x19,
+            0xf8, 0xce, 0xa9, 0x0b, 0xd0, 0xa9, 0xb2, 0xf8, 0x1d, 0x21, 0xff, 0xa3, 0xa4, 0xc6,
+            0x44, 0x81, 0xd4, 0x1c,
         ]);
         // 32 bytes of zeroes representing "new asset"
         engine.input(&[0; 32]);
@@ -432,10 +439,9 @@ mod tests {
             engine.midstate(),
             // RPC output
             sha256::Midstate::from_inner([
-                0x0b, 0xcf, 0xe0, 0xe5, 0x4e, 0x6c, 0xc7, 0xd3,
-                0x4f, 0x4f, 0x7c, 0x1d, 0xf0, 0xb0, 0xf5, 0x03,
-                0xf2, 0xf7, 0x12, 0x91, 0x2a, 0x06, 0x05, 0xb4,
-                0x14, 0xed, 0x33, 0x7f, 0x7f, 0x03, 0x2e, 0x03,
+                0x0b, 0xcf, 0xe0, 0xe5, 0x4e, 0x6c, 0xc7, 0xd3, 0x4f, 0x4f, 0x7c, 0x1d, 0xf0, 0xb0,
+                0xf5, 0x03, 0xf2, 0xf7, 0x12, 0x91, 0x2a, 0x06, 0x05, 0xb4, 0x14, 0xed, 0x33, 0x7f,
+                0x7f, 0x03, 0x2e, 0x03,
             ])
         );
     }
@@ -489,28 +495,32 @@ mod tests {
         assert_eq!(hash, sha256::Hash(HASH_EXPECTED));
     }
 
-    #[cfg(feature="serde")]
+    #[cfg(feature = "serde")]
     #[test]
     fn sha256_serde() {
-        use serde_test::{Configure, Token, assert_tokens};
+        use serde_test::{assert_tokens, Configure, Token};
 
         static HASH_BYTES: [u8; 32] = [
-            0xef, 0x53, 0x7f, 0x25, 0xc8, 0x95, 0xbf, 0xa7,
-            0x82, 0x52, 0x65, 0x29, 0xa9, 0xb6, 0x3d, 0x97,
-            0xaa, 0x63, 0x15, 0x64, 0xd5, 0xd7, 0x89, 0xc2,
-            0xb7, 0x65, 0x44, 0x8c, 0x86, 0x35, 0xfb, 0x6c,
+            0xef, 0x53, 0x7f, 0x25, 0xc8, 0x95, 0xbf, 0xa7, 0x82, 0x52, 0x65, 0x29, 0xa9, 0xb6,
+            0x3d, 0x97, 0xaa, 0x63, 0x15, 0x64, 0xd5, 0xd7, 0x89, 0xc2, 0xb7, 0x65, 0x44, 0x8c,
+            0x86, 0x35, 0xfb, 0x6c,
         ];
 
         let hash = sha256::Hash::from_slice(&HASH_BYTES).expect("right number of bytes");
         assert_tokens(&hash.compact(), &[Token::BorrowedBytes(&HASH_BYTES[..])]);
-        assert_tokens(&hash.readable(), &[Token::Str("ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c")]);
+        assert_tokens(
+            &hash.readable(),
+            &[Token::Str(
+                "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c",
+            )],
+        );
     }
 
     #[cfg(target_arch = "wasm32")]
     mod wasm_tests {
         extern crate wasm_bindgen_test;
-        use super::*;
         use self::wasm_bindgen_test::*;
+        use super::*;
         #[wasm_bindgen_test]
         fn sha256_tests() {
             test();
@@ -520,7 +530,7 @@ mod tests {
     }
 }
 
-#[cfg(all(test, feature="unstable"))]
+#[cfg(all(test, feature = "unstable"))]
 mod benches {
     use test::Bencher;
 
@@ -529,33 +539,32 @@ mod benches {
     use HashEngine;
 
     #[bench]
-    pub fn sha256_10(bh: & mut Bencher) {
+    pub fn sha256_10(bh: &mut Bencher) {
         let mut engine = sha256::Hash::engine();
         let bytes = [1u8; 10];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    pub fn sha256_1k(bh: & mut Bencher) {
+    pub fn sha256_1k(bh: &mut Bencher) {
         let mut engine = sha256::Hash::engine();
         let bytes = [1u8; 1024];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    pub fn sha256_64k(bh: & mut Bencher) {
+    pub fn sha256_64k(bh: &mut Bencher) {
         let mut engine = sha256::Hash::engine();
         let bytes = [1u8; 65536];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
-
 }

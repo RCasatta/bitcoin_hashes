@@ -26,41 +26,46 @@
 #![deny(non_snake_case)]
 #![deny(unused_mut)]
 #![deny(missing_docs)]
-
 // In general, rust is absolutely horrid at supporting users doing things like,
 // for example, compiling Rust code for real environments. Disable useless lints
 // that don't do anything but annoy us and cant actually ever be resolved.
 #![allow(bare_trait_objects)]
 #![allow(ellipsis_inclusive_range_patterns)]
-
 #![cfg_attr(all(not(test), not(feature = "std")), no_std)]
 #![cfg_attr(all(test, feature = "unstable"), feature(test))]
-#[cfg(all(test, feature = "unstable"))] extern crate test;
+#[cfg(all(test, feature = "unstable"))]
+extern crate test;
 
-#[cfg(any(test, feature="std"))] extern crate core;
-#[cfg(feature="serde")] pub extern crate serde;
-#[cfg(all(test,feature="serde"))] extern crate serde_test;
+#[cfg(any(test, feature = "std"))]
+extern crate core;
+#[cfg(feature = "serde")]
+pub extern crate serde;
+#[cfg(all(test, feature = "serde"))]
+extern crate serde_test;
 
-#[macro_use] mod util;
-#[macro_use] pub mod serde_macros;
-#[cfg(any(test, feature = "std"))] mod std_impls;
+#[macro_use]
+mod util;
+#[macro_use]
+pub mod serde_macros;
+pub mod cmp;
 pub mod error;
-pub mod hex;
 pub mod hash160;
+pub mod hex;
 pub mod hmac;
 pub mod ripemd160;
 pub mod sha1;
 pub mod sha256;
 pub mod sha256d;
 pub mod sha256t;
-pub mod siphash24;
 pub mod sha512;
-pub mod cmp;
+pub mod siphash24;
+#[cfg(any(test, feature = "std"))]
+mod std_impls;
 
 use core::{borrow, fmt, hash, ops};
 
-pub use hmac::{Hmac, HmacEngine};
 pub use error::Error;
+pub use hmac::{Hmac, HmacEngine};
 
 /// A hashing engine which bytes can be serialized into
 pub trait HashEngine: Clone + Default {
@@ -82,14 +87,24 @@ pub trait HashEngine: Clone + Default {
 }
 
 /// Trait which applies to hashes of all types
-pub trait Hash: Copy + Clone + PartialEq + Eq + Default + PartialOrd + Ord +
-    hash::Hash + fmt::Debug + fmt::Display + fmt::LowerHex +
-    ops::Index<ops::RangeFull, Output = [u8]> +
-    ops::Index<ops::RangeFrom<usize>, Output = [u8]> +
-    ops::Index<ops::RangeTo<usize>, Output = [u8]> +
-    ops::Index<ops::Range<usize>, Output = [u8]> +
-    ops::Index<usize, Output = u8> +
-    borrow::Borrow<[u8]>
+pub trait Hash:
+    Copy
+    + Clone
+    + PartialEq
+    + Eq
+    + Default
+    + PartialOrd
+    + Ord
+    + hash::Hash
+    + fmt::Debug
+    + fmt::Display
+    + fmt::LowerHex
+    + ops::Index<ops::RangeFull, Output = [u8]>
+    + ops::Index<ops::RangeFrom<usize>, Output = [u8]>
+    + ops::Index<ops::RangeTo<usize>, Output = [u8]>
+    + ops::Index<ops::Range<usize>, Output = [u8]>
+    + ops::Index<usize, Output = u8>
+    + borrow::Borrow<[u8]>
 {
     /// A hashing engine which bytes can be serialized into. It is expected
     /// to implement the `io::Write` trait, and to never return errors under
@@ -138,8 +153,8 @@ pub trait Hash: Copy + Clone + PartialEq + Eq + Default + PartialOrd + Ord +
 #[cfg(test)]
 mod tests {
     use Hash;
-    hash_newtype!(TestNewtype, ::sha256d::Hash, 32, doc="A test newtype");
-    hash_newtype!(TestNewtype2, ::sha256d::Hash, 32, doc="A test newtype");
+    hash_newtype!(TestNewtype, ::sha256d::Hash, 32, doc = "A test newtype");
+    hash_newtype!(TestNewtype2, ::sha256d::Hash, 32, doc = "A test newtype");
 
     #[test]
     fn convert_newtypes() {
@@ -152,4 +167,3 @@ mod tests {
         assert_eq!(h2.as_hash(), h);
     }
 }
-

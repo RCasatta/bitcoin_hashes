@@ -144,8 +144,6 @@ macro_rules! engine_input_impl(
     )
 );
 
-
-
 macro_rules! define_slice_to_be {
     ($name: ident, $type: ty) => {
         #[inline]
@@ -153,11 +151,11 @@ macro_rules! define_slice_to_be {
             assert_eq!(slice.len(), ::core::mem::size_of::<$type>());
             let mut res = 0;
             for i in 0..::core::mem::size_of::<$type>() {
-                res |= (slice[i] as $type) << (::core::mem::size_of::<$type>() - i - 1)*8;
+                res |= (slice[i] as $type) << (::core::mem::size_of::<$type>() - i - 1) * 8;
             }
             res
         }
-    }
+    };
 }
 macro_rules! define_slice_to_le {
     ($name: ident, $type: ty) => {
@@ -166,11 +164,11 @@ macro_rules! define_slice_to_le {
             assert_eq!(slice.len(), ::core::mem::size_of::<$type>());
             let mut res = 0;
             for i in 0..::core::mem::size_of::<$type>() {
-                res |= (slice[i] as $type) << i*8;
+                res |= (slice[i] as $type) << i * 8;
             }
             res
         }
-    }
+    };
 }
 macro_rules! define_be_to_array {
     ($name: ident, $type: ty, $byte_len: expr) => {
@@ -179,11 +177,11 @@ macro_rules! define_be_to_array {
             assert_eq!(::core::mem::size_of::<$type>(), $byte_len); // size_of isn't a constfn in 1.22
             let mut res = [0; $byte_len];
             for i in 0..$byte_len {
-                res[i] = ((val >> ($byte_len - i - 1)*8) & 0xff) as u8;
+                res[i] = ((val >> ($byte_len - i - 1) * 8) & 0xff) as u8;
             }
             res
         }
-    }
+    };
 }
 macro_rules! define_le_to_array {
     ($name: ident, $type: ty, $byte_len: expr) => {
@@ -192,11 +190,11 @@ macro_rules! define_le_to_array {
             assert_eq!(::core::mem::size_of::<$type>(), $byte_len); // size_of isn't a constfn in 1.22
             let mut res = [0; $byte_len];
             for i in 0..$byte_len {
-                res[i] = ((val >> i*8) & 0xff) as u8;
+                res[i] = ((val >> i * 8) & 0xff) as u8;
             }
             res
         }
-    }
+    };
 }
 
 define_slice_to_be!(slice_to_u32_be, u32);
@@ -213,7 +211,13 @@ define_le_to_array!(u64_to_array_le, u64, 8);
 #[macro_export]
 macro_rules! hash_newtype {
     ($newtype:ident, $hash:ty, $len:expr, $docs:meta) => {
-        hash_newtype!($newtype, $hash, $len, $docs, <$hash as $crate::Hash>::DISPLAY_BACKWARD);
+        hash_newtype!(
+            $newtype,
+            $hash,
+            $len,
+            $docs,
+            <$hash as $crate::Hash>::DISPLAY_BACKWARD
+        );
     };
     ($newtype:ident, $hash:ty, $len:expr, $docs:meta, $reverse:expr) => {
         #[$docs]
@@ -301,9 +305,9 @@ macro_rules! hash_newtype {
 
 #[cfg(test)]
 mod test {
-    use Hash;
-    use sha256;
     use super::*;
+    use sha256;
+    use Hash;
 
     #[test]
     fn borrow_slice_impl_to_vec() {
@@ -315,13 +319,25 @@ mod test {
     #[test]
     fn endianness_test() {
         assert_eq!(slice_to_u32_be(&[0xde, 0xad, 0xbe, 0xef]), 0xdeadbeef);
-        assert_eq!(slice_to_u64_be(&[0x1b, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef]), 0x1badcafedeadbeef);
+        assert_eq!(
+            slice_to_u64_be(&[0x1b, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef]),
+            0x1badcafedeadbeef
+        );
         assert_eq!(u32_to_array_be(0xdeadbeef), [0xde, 0xad, 0xbe, 0xef]);
-        assert_eq!(u64_to_array_be(0x1badcafedeadbeef), [0x1b, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef]);
+        assert_eq!(
+            u64_to_array_be(0x1badcafedeadbeef),
+            [0x1b, 0xad, 0xca, 0xfe, 0xde, 0xad, 0xbe, 0xef]
+        );
 
         assert_eq!(slice_to_u32_le(&[0xef, 0xbe, 0xad, 0xde]), 0xdeadbeef);
-        assert_eq!(slice_to_u64_le(&[0xef, 0xbe, 0xad, 0xde, 0xfe, 0xca, 0xad, 0x1b]), 0x1badcafedeadbeef);
+        assert_eq!(
+            slice_to_u64_le(&[0xef, 0xbe, 0xad, 0xde, 0xfe, 0xca, 0xad, 0x1b]),
+            0x1badcafedeadbeef
+        );
         assert_eq!(u32_to_array_le(0xdeadbeef), [0xef, 0xbe, 0xad, 0xde]);
-        assert_eq!(u64_to_array_le(0x1badcafedeadbeef), [0xef, 0xbe, 0xad, 0xde, 0xfe, 0xca, 0xad, 0x1b]);
+        assert_eq!(
+            u64_to_array_le(0x1badcafedeadbeef),
+            [0xef, 0xbe, 0xad, 0xde, 0xfe, 0xca, 0xad, 0x1b]
+        );
     }
 }

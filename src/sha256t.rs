@@ -14,14 +14,15 @@
 
 //! # SHA256t (tagged SHA256)
 
-use core::{cmp, str};
-#[cfg(feature="serde")] use core::fmt;
+#[cfg(feature = "serde")]
+use core::fmt;
 use core::marker::PhantomData;
+use core::{cmp, str};
 
 use sha256;
-use Hash as HashTrait;
 #[allow(unused)]
 use Error;
+use Hash as HashTrait;
 
 /// Trait representing a tag that can be used as a context for SHA256t hashes.
 pub trait Tag {
@@ -32,10 +33,7 @@ pub trait Tag {
 
 /// Output of the SHA256t hash function.
 #[repr(transparent)]
-pub struct Hash<T: Tag>(
-    [u8; 32],
-    PhantomData<T>
-);
+pub struct Hash<T: Tag>([u8; 32], PhantomData<T>);
 
 impl<T: Tag> Copy for Hash<T> {}
 impl<T: Tag> Clone for Hash<T> {
@@ -77,11 +75,11 @@ impl<T: Tag> str::FromStr for Hash<T> {
     }
 }
 
-hex_fmt_impl!(Debug, Hash, T:Tag);
-hex_fmt_impl!(Display, Hash, T:Tag);
-hex_fmt_impl!(LowerHex, Hash, T:Tag);
-index_impl!(Hash, T:Tag);
-borrow_slice_impl!(Hash, T:Tag);
+hex_fmt_impl!(Debug, Hash, T: Tag);
+hex_fmt_impl!(Display, Hash, T: Tag);
+hex_fmt_impl!(LowerHex, Hash, T: Tag);
+index_impl!(Hash, T: Tag);
+borrow_slice_impl!(Hash, T: Tag);
 
 impl<T: Tag> HashTrait for Hash<T> {
     type Engine = sha256::HashEngine;
@@ -144,7 +142,7 @@ macro_rules! sha256t_hash_newtype {
     };
 }
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 impl<T: Tag> ::serde::Serialize for Hash<T> {
     fn serialize<S: ::serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
@@ -155,15 +153,17 @@ impl<T: Tag> ::serde::Serialize for Hash<T> {
     }
 }
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 struct HexVisitor<T: Tag>(PhantomData<T>);
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 impl<T: Tag> Default for HexVisitor<T> {
-    fn default() -> Self { HexVisitor(PhantomData) }
+    fn default() -> Self {
+        HexVisitor(PhantomData)
+    }
 }
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 impl<'de, T: Tag> ::serde::de::Visitor<'de> for HexVisitor<T> {
     type Value = Hash<T>;
 
@@ -172,8 +172,8 @@ impl<'de, T: Tag> ::serde::de::Visitor<'de> for HexVisitor<T> {
     }
 
     fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
-        where
-            E: ::serde::de::Error,
+    where
+        E: ::serde::de::Error,
     {
         use core::str::FromStr;
         if let Ok(hex) = str::from_utf8(v) {
@@ -184,23 +184,25 @@ impl<'de, T: Tag> ::serde::de::Visitor<'de> for HexVisitor<T> {
     }
 
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: ::serde::de::Error,
+    where
+        E: ::serde::de::Error,
     {
         use core::str::FromStr;
         Hash::<T>::from_str(v).map_err(E::custom)
     }
 }
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 struct BytesVisitor<T: Tag>(PhantomData<T>);
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 impl<T: Tag> Default for BytesVisitor<T> {
-    fn default() -> Self { BytesVisitor(PhantomData) }
+    fn default() -> Self {
+        BytesVisitor(PhantomData)
+    }
 }
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 impl<'de, T: Tag> ::serde::de::Visitor<'de> for BytesVisitor<T> {
     type Value = Hash<T>;
 
@@ -209,8 +211,8 @@ impl<'de, T: Tag> ::serde::de::Visitor<'de> for BytesVisitor<T> {
     }
 
     fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
-        where
-            E: ::serde::de::Error,
+    where
+        E: ::serde::de::Error,
     {
         Hash::<T>::from_slice(v).map_err(|_| {
             // from_slice only errors on incorrect length
@@ -219,7 +221,7 @@ impl<'de, T: Tag> ::serde::de::Visitor<'de> for BytesVisitor<T> {
     }
 }
 
-#[cfg(feature="serde")]
+#[cfg(feature = "serde")]
 impl<'de, T: Tag> ::serde::Deserialize<'de> for Hash<T> {
     fn deserialize<D: ::serde::Deserializer<'de>>(d: D) -> Result<Hash<T>, D::Error> {
         if d.is_human_readable() {
@@ -232,12 +234,12 @@ impl<'de, T: Tag> ::serde::Deserialize<'de> for Hash<T> {
 
 #[cfg(test)]
 mod tests {
-    use ::{Hash, sha256, sha256t};
-    use ::hex::ToHex;
+    use hex::ToHex;
+    use {sha256, sha256t, Hash};
 
     const TEST_MIDSTATE: [u8; 32] = [
-       156, 224, 228, 230, 124, 17, 108, 57, 56, 179, 202, 242, 195, 15, 80, 137, 211, 243,
-       147, 108, 71, 99, 110, 96, 125, 179, 62, 234, 221, 198, 240, 201,
+        156, 224, 228, 230, 124, 17, 108, 57, 56, 179, 202, 242, 195, 15, 80, 137, 211, 243, 147,
+        108, 71, 99, 110, 96, 125, 179, 62, 234, 221, 198, 240, 201,
     ];
 
     #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
@@ -254,17 +256,24 @@ mod tests {
     /// A hash tagged with `$name`.
     pub type TestHash = sha256t::Hash<TestHashTag>;
 
-    sha256t_hash_newtype!(NewTypeHash, NewTypeTag, TEST_MIDSTATE, 64, doc="test hash", true);
+    sha256t_hash_newtype!(
+        NewTypeHash,
+        NewTypeTag,
+        TEST_MIDSTATE,
+        64,
+        doc = "test hash",
+        true
+    );
 
     #[test]
     fn test_sha256t() {
-       assert_eq!(
-           TestHash::hash(&[0]).to_hex(),
-           "29589d5122ec666ab5b4695070b6debc63881a4f85d88d93ddc90078038213ed"
-       );
-       assert_eq!(
-           NewTypeHash::hash(&[0]).to_hex(),
-           "29589d5122ec666ab5b4695070b6debc63881a4f85d88d93ddc90078038213ed"
-       );
+        assert_eq!(
+            TestHash::hash(&[0]).to_hex(),
+            "29589d5122ec666ab5b4695070b6debc63881a4f85d88d93ddc90078038213ed"
+        );
+        assert_eq!(
+            NewTypeHash::hash(&[0]).to_hex(),
+            "29589d5122ec666ab5b4695070b6debc63881a4f85d88d93ddc90078038213ed"
+        );
     }
 }

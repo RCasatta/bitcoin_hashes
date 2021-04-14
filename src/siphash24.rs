@@ -21,10 +21,10 @@
 
 use core::{cmp, mem, ptr, str};
 
+use util;
 use Error;
 use Hash as HashTrait;
 use HashEngine as EngineTrait;
-use util;
 
 macro_rules! compress {
     ($state:expr) => {{
@@ -191,7 +191,6 @@ impl EngineTrait for HashEngine {
     fn n_bytes_hashed(&self) -> usize {
         self.length
     }
-
 }
 
 /// Output of the SipHash24 hash function.

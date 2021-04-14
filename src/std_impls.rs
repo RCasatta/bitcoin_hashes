@@ -18,22 +18,32 @@
 
 use std::{error, io};
 
-use {hex, sha1, sha256, sha512, ripemd160, siphash24};
-use HashEngine;
 use Error;
+use HashEngine;
+use {hex, ripemd160, sha1, sha256, sha512, siphash24};
 
 impl error::Error for Error {
-    fn cause(&self) -> Option<&error::Error> { None }
-    fn description(&self) -> &str { "`std::error::description` is deprecated" }
+    fn cause(&self) -> Option<&error::Error> {
+        None
+    }
+    fn description(&self) -> &str {
+        "`std::error::description` is deprecated"
+    }
 }
 
 impl error::Error for hex::Error {
-    fn cause(&self) -> Option<&error::Error> { None }
-    fn description(&self) -> &str { "`std::error::description` is deprecated" }
+    fn cause(&self) -> Option<&error::Error> {
+        None
+    }
+    fn description(&self) -> &str {
+        "`std::error::description` is deprecated"
+    }
 }
 
 impl io::Write for sha1::HashEngine {
-    fn flush(&mut self) -> io::Result<()> { Ok(()) }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
 
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.input(buf);
@@ -42,7 +52,9 @@ impl io::Write for sha1::HashEngine {
 }
 
 impl io::Write for sha256::HashEngine {
-    fn flush(&mut self) -> io::Result<()> { Ok(()) }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
 
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.input(buf);
@@ -51,7 +63,9 @@ impl io::Write for sha256::HashEngine {
 }
 
 impl io::Write for sha512::HashEngine {
-    fn flush(&mut self) -> io::Result<()> { Ok(()) }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
 
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.input(buf);
@@ -60,7 +74,9 @@ impl io::Write for sha512::HashEngine {
 }
 
 impl io::Write for ripemd160::HashEngine {
-    fn flush(&mut self) -> io::Result<()> { Ok(()) }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
 
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.input(buf);
@@ -69,7 +85,9 @@ impl io::Write for ripemd160::HashEngine {
 }
 
 impl io::Write for siphash24::HashEngine {
-    fn flush(&mut self) -> io::Result<()> { Ok(()) }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
 
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.input(buf);
@@ -81,8 +99,8 @@ impl io::Write for siphash24::HashEngine {
 mod tests {
     use std::io::Write;
 
-    use {sha1, sha256, sha256d, sha512, ripemd160, hash160, siphash24};
     use Hash;
+    use {hash160, ripemd160, sha1, sha256, sha256d, sha512, siphash24};
 
     macro_rules! write_test {
         ($mod:ident, $exp_empty:expr, $exp_256:expr, $exp_64k:expr,) => {
@@ -90,26 +108,17 @@ mod tests {
             fn $mod() {
                 let mut engine = $mod::Hash::engine();
                 engine.write_all(&[]).unwrap();
-                assert_eq!(
-                    format!("{}", $mod::Hash::from_engine(engine)),
-                    $exp_empty
-                );
+                assert_eq!(format!("{}", $mod::Hash::from_engine(engine)), $exp_empty);
 
                 let mut engine = $mod::Hash::engine();
                 engine.write_all(&[1; 256]).unwrap();
-                assert_eq!(
-                    format!("{}", $mod::Hash::from_engine(engine)),
-                    $exp_256
-                );
+                assert_eq!(format!("{}", $mod::Hash::from_engine(engine)), $exp_256);
 
                 let mut engine = $mod::Hash::engine();
                 engine.write_all(&[99; 64000]).unwrap();
-                assert_eq!(
-                    format!("{}", $mod::Hash::from_engine(engine)),
-                    $exp_64k
-                );
+                assert_eq!(format!("{}", $mod::Hash::from_engine(engine)), $exp_64k);
             }
-        }
+        };
     }
 
     write_test!(

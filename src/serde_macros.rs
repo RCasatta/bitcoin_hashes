@@ -20,10 +20,10 @@ pub mod serde_details {
     use Error;
 
     use core::marker::PhantomData;
-    use core::{fmt, ops, str};
     use core::str::FromStr;
+    use core::{fmt, ops, str};
     struct HexVisitor<ValueT>(PhantomData<ValueT>);
-    use serde::{de, Serializer, Deserializer};
+    use serde::{de, Deserializer, Serializer};
 
     impl<'de, ValueT> de::Visitor<'de> for HexVisitor<ValueT>
     where
@@ -43,10 +43,7 @@ pub mod serde_details {
             if let Ok(hex) = str::from_utf8(v) {
                 Self::Value::from_str(hex).map_err(E::custom)
             } else {
-                return Err(E::invalid_value(
-                    de::Unexpected::Bytes(v),
-                    &self,
-                ));
+                return Err(E::invalid_value(de::Unexpected::Bytes(v), &self));
             }
         }
 

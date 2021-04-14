@@ -17,8 +17,8 @@
 use core::str;
 
 use sha256;
-use Hash as HashTrait;
 use Error;
+use Hash as HashTrait;
 
 /// Output of the SHA256d hash function
 #[derive(Copy, Clone, PartialEq, Eq, Default, PartialOrd, Ord, Hash)]
@@ -85,29 +85,28 @@ impl HashTrait for Hash {
 
 #[cfg(test)]
 mod tests {
-    use sha256d;
     use hex::{FromHex, ToHex};
+    use sha256d;
     use Hash;
     use HashEngine;
 
-#[derive(Clone)]
+    #[derive(Clone)]
     struct Test {
-input: &'static str,
-           output: Vec<u8>,
-           output_str: &'static str,
+        input: &'static str,
+        output: Vec<u8>,
+        output_str: &'static str,
     }
 
-#[test]
+    #[test]
     fn test() {
         let tests = vec![
             // Test vector copied out of rust-bitcoin
             Test {
                 input: "",
                 output: vec![
-                    0x5d, 0xf6, 0xe0, 0xe2, 0x76, 0x13, 0x59, 0xd3,
-                    0x0a, 0x82, 0x75, 0x05, 0x8e, 0x29, 0x9f, 0xcc,
-                    0x03, 0x81, 0x53, 0x45, 0x45, 0xf5, 0x5c, 0xf4,
-                    0x3e, 0x41, 0x98, 0x3f, 0x5d, 0x4c, 0x94, 0x56,
+                    0x5d, 0xf6, 0xe0, 0xe2, 0x76, 0x13, 0x59, 0xd3, 0x0a, 0x82, 0x75, 0x05, 0x8e,
+                    0x29, 0x9f, 0xcc, 0x03, 0x81, 0x53, 0x45, 0x45, 0xf5, 0x5c, 0xf4, 0x3e, 0x41,
+                    0x98, 0x3f, 0x5d, 0x4c, 0x94, 0x56,
                 ],
                 output_str: "56944c5d3f98413ef45cf54545538103cc9f298e0575820ad3591376e2e0f65d",
             },
@@ -116,7 +115,10 @@ input: &'static str,
         for test in tests {
             // Hash through high-level API, check hex encoding/decoding
             let hash = sha256d::Hash::hash(&test.input.as_bytes());
-            assert_eq!(hash, sha256d::Hash::from_hex(test.output_str).expect("parse hex"));
+            assert_eq!(
+                hash,
+                sha256d::Hash::from_hex(test.output_str).expect("parse hex")
+            );
             assert_eq!(&hash[..], &test.output[..]);
             assert_eq!(&hash.to_hex(), &test.output_str);
 
@@ -131,25 +133,29 @@ input: &'static str,
         }
     }
 
-    #[cfg(feature="serde")]
+    #[cfg(feature = "serde")]
     #[test]
     fn sha256_serde() {
-        use serde_test::{Configure, Token, assert_tokens};
+        use serde_test::{assert_tokens, Configure, Token};
 
         static HASH_BYTES: [u8; 32] = [
-            0xef, 0x53, 0x7f, 0x25, 0xc8, 0x95, 0xbf, 0xa7,
-            0x82, 0x52, 0x65, 0x29, 0xa9, 0xb6, 0x3d, 0x97,
-            0xaa, 0x63, 0x15, 0x64, 0xd5, 0xd7, 0x89, 0xc2,
-            0xb7, 0x65, 0x44, 0x8c, 0x86, 0x35, 0xfb, 0x6c,
+            0xef, 0x53, 0x7f, 0x25, 0xc8, 0x95, 0xbf, 0xa7, 0x82, 0x52, 0x65, 0x29, 0xa9, 0xb6,
+            0x3d, 0x97, 0xaa, 0x63, 0x15, 0x64, 0xd5, 0xd7, 0x89, 0xc2, 0xb7, 0x65, 0x44, 0x8c,
+            0x86, 0x35, 0xfb, 0x6c,
         ];
 
         let hash = sha256d::Hash::from_slice(&HASH_BYTES).expect("right number of bytes");
         assert_tokens(&hash.compact(), &[Token::BorrowedBytes(&HASH_BYTES[..])]);
-        assert_tokens(&hash.readable(), &[Token::Str("6cfb35868c4465b7c289d7d5641563aa973db6a929655282a7bf95c8257f53ef")]);
+        assert_tokens(
+            &hash.readable(),
+            &[Token::Str(
+                "6cfb35868c4465b7c289d7d5641563aa973db6a929655282a7bf95c8257f53ef",
+            )],
+        );
     }
 }
 
-#[cfg(all(test, feature="unstable"))]
+#[cfg(all(test, feature = "unstable"))]
 mod benches {
     use test::Bencher;
 
@@ -158,30 +164,30 @@ mod benches {
     use HashEngine;
 
     #[bench]
-    pub fn sha256d_10(bh: & mut Bencher) {
+    pub fn sha256d_10(bh: &mut Bencher) {
         let mut engine = sha256d::Hash::engine();
         let bytes = [1u8; 10];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    pub fn sha256d_1k(bh: & mut Bencher) {
+    pub fn sha256d_1k(bh: &mut Bencher) {
         let mut engine = sha256d::Hash::engine();
         let bytes = [1u8; 1024];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
     }
 
     #[bench]
-    pub fn sha256d_64k(bh: & mut Bencher) {
+    pub fn sha256d_64k(bh: &mut Bencher) {
         let mut engine = sha256d::Hash::engine();
         let bytes = [1u8; 65536];
-        bh.iter( || {
+        bh.iter(|| {
             engine.input(&bytes);
         });
         bh.bytes = bytes.len() as u64;
