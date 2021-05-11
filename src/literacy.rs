@@ -1,6 +1,3 @@
-#[cfg(all(feature = "std", feature = "use-core2"))]
-compile_error!("feature \"std\" and \"use-core2\" cannot be enabled together.");
-
 
 pub trait Read{
     type Error;
@@ -26,7 +23,7 @@ pub trait Write {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(all(not(feature = "use-core2"), feature = "std"))]
 mod std_impl {
     use super::{Read, Write};
 
@@ -79,7 +76,7 @@ mod core2_impl {
 #[cfg(test)]
 mod tests {
 
-    #[cfg(feature = "std")]
+    #[cfg(all(not(feature = "use-core2"), feature = "std"))]
     mod std_test {
         use ::literacy::{Read, Write};
 

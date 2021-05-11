@@ -16,7 +16,7 @@ path = "src/lib.rs"
 
 [features]
 default = [ "std" ]
-std = []
+std = ["core2/std"]
 serde-std = ["serde/std"]
 unstable = []  # for benchmarking
 use-core2 = ["core2"]

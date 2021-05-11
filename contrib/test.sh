@@ -1,6 +1,6 @@
 #!/bin/sh -ex
 
-FEATURES="serde serde-std"
+FEATURES="serde-std use-core2"
 
 # Use toolchain if explicitly specified
 if [ -n "$TOOLCHAIN" ]
@@ -19,24 +19,28 @@ cargo build --all
 cargo test --all
 
 if [ "$DO_FEATURE_MATRIX" = true ]; then
-    cargo build --all --no-default-features
-    cargo test --all --no-default-features
+    if [ "$ON_1_29_0" = true ] && [ "$FEATURES" =~ "use-core2" ]; then
+        echo "skip"
+    else
+        cargo build --all --no-default-features
+        cargo test --all --no-default-features
 
-    # All features
-    cargo build --all --no-default-features --features="$FEATURES"
-    cargo test --all --features="$FEATURES"
-    # Single features
-    for feature in ${FEATURES}
-    do
-        cargo build --all --no-default-features --features="$feature"
-        cargo test --all --features="$feature"
-    done
+        # All features
+        cargo build --all --no-default-features --features="$FEATURES"
+        cargo test --all --features="$FEATURES"
+        # Single features
+        for feature in ${FEATURES}
+        do
+            cargo build --all --no-default-features --features="$feature"
+            cargo test --all --features="$feature"
+        done
 
-    # Other combos
-    cargo test --all --features="serde-std"
+        # Other combos
+        cargo test --all --features="serde-std"
+    fi
 fi
 
-if [ "$DO_SCHEMARS_TESTS" = true ]; then
+if [ "$ON_1_29_0" = false ]; then
     (cd extended_tests/schemars && cargo test)
 fi
 
