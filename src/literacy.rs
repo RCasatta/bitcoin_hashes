@@ -47,32 +47,33 @@ pub trait Write {
 #[cfg(all(feature = "std", not(feature = "use-core2")))]
 mod std_impl {
     use super::{Read, Write};
+    use std::borrow::BorrowMut;
 
-    impl<R: ::std::io::Read> Read for R {
+    impl<R: BorrowMut<dyn (::std::io::Read)>> Read for R {
         type Error = ::std::io::Error;
 
         fn read(&mut self, buf: &mut [u8]) -> Result<usize, Self::Error> {
-            <Self as ::std::io::Read>::read(self, buf)
+            self.borrow_mut().read(buf)
         }
 
         fn read_exact(&mut self, buf: &mut [u8]) -> Result<(), Self::Error> {
-            <Self as ::std::io::Read>::read_exact(self, buf)
+            self.borrow_mut().read_exact(buf)
         }
     }
 
-    impl<W: ::std::io::Write> Write for W {
+    impl<W: BorrowMut<dyn (::std::io::Write)>> Write for W {
         type Error = ::std::io::Error;
 
         fn write(&mut self, buf: &[u8]) -> Result<usize, Self::Error> {
-            <Self as ::std::io::Write>::write(self, buf)
+            self.borrow_mut().write(buf)
         }
 
         fn write_all(&mut self, buf: &[u8]) -> Result<(), Self::Error> {
-            <Self as ::std::io::Write>::write_all(self, buf)
+            self.borrow_mut().write_all(buf)
         }
 
         fn flush(&mut self) -> Result<(), Self::Error> {
-            <Self as ::std::io::Write>::flush(self)
+            self.borrow_mut().flush()
         }
     }
 }
@@ -183,13 +184,16 @@ mod tests {
 
     #[cfg(all(feature = "std", not(feature = "use-core2")))]
     mod std_test {
-        use ::literacy::{Read, Write};
+        use ::literacy::{Write};
+
 
         #[test]
         fn test_std_read() {
+            use std::io::Read;
             let mut cursor = ::std::io::Cursor::new(vec![10u8]);
             let mut buf = [0u8; 1];
             cursor.read(&mut buf).unwrap();
+
             assert_eq!(buf, [10u8]);
         }
 
